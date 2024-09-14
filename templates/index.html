@@ -4,19 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document Retrieval System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 <body>
-    <h1>Welcome to the Document Retrieval System</h1>
-    <form action="/search" method="post">
-        <label for="user_id">User ID:</label>
-        <input type="text" id="user_id" name="user_id" required><br>
-        <label for="text">Search Text:</label>
-        <input type="text" id="text" name="text" required><br>
-        <label for="top_k">Top K:</label>
-        <input type="number" id="top_k" name="top_k" value="5"><br>
-        <label for="threshold">Threshold:</label>
-        <input type="number" step="0.01" id="threshold" name="threshold" value="0.7"><br>
-        <input type="submit" value="Search">
-    </form>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Document Retrieval System</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/">Home</a>
+                    </li>
+                    <!-- Add more navigation items here if needed -->
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Welcome to the Document Retrieval System</h1>
+        <form action="/search" method="post">
+            <div class="mb-3">
+                <label for="user_id" class="form-label">User ID:</label>
+                <input type="text" id="user_id" name="user_id" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="text" class="form-label">Search Text:</label>
+                <input type="text" id="text" name="text" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="top_k" class="form-label">Top K:</label>
+                <input type="number" id="top_k" name="top_k" class="form-control" value="5">
+            </div>
+            <div class="mb-3">
+                <label for="threshold" class="form-label">Threshold:</label>
+                <input type="number" step="0.01" id="threshold" name="threshold" class="form-control" value="0.7">
+            </div>
+            <button type="submit" class="btn btn-dark">Search</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9I0A8b8RQ7/6U8ltMNeWELzVvq8mg5e8vI1x4xwZ2PQk1r3xSFO" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cuYB2rT54G4fF45I5p5hujr0EGh/lH5dLz/Z4fIoKJ8yOb9yoP5qu3lcpCEg72gK" crossorigin="anonymous"></script>
 </body>
 </html>
