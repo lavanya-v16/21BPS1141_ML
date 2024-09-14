@@ -6,12 +6,17 @@ import threading
 import time
 from datetime import datetime
 from collections import defaultdict
+import redis
+import json
 
 # Initialize Flask app
 app = Flask(__name__)
 
 # Initialize Elasticsearch instance
 es = Elasticsearch([{'host': 'localhost', 'port': 9200, 'scheme': 'http'}])
+
+# Initialize Redis instance
+cache = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
 
 # Define index name
 index_name = 'news_articles'
@@ -54,7 +59,7 @@ def scrape_and_index():
                 pass
 
         print("Scraping and indexing completed.")
-        time.sleep(14400)  # 4 hours = 14400 seconds
+        time.sleep(1800)  # 4 hours = 14400 seconds
 
 # Route for index.html
 @app.route('/', methods=['GET'])
@@ -64,17 +69,22 @@ def index():
 # Health check endpoint
 @app.route('/health', methods=['GET'])
 def health():
-    return "API is running!"
+    # Return a JSON response with the message "API is running"
+    return jsonify({"status": "API is running (21BPS1141)"}), 200
 
 # Search endpoint
+
 @app.route('/search', methods=['POST'])
 def search():
     user_id = request.form.get('user_id')
     if user_id is None:
         return jsonify({"error": "User ID is required"}), 400
 
+    if user_id not in users:
+        users[user_id] = 0
+    
     if users[user_id] >= 5:
-        return jsonify({"error": "Rate limit exceeded"}), 429
+        return jsonify({"error": "Rate limit exceeded. Too Many Requests"}), 429
     
     users[user_id] += 1
 
@@ -82,47 +92,58 @@ def search():
     top_k = request.form.get('top_k', default=5, type=int)
     threshold = request.form.get('threshold', default=0.7, type=float)
     
-    start_time = datetime.now()
+    cache_key = f"{user_id}:{query_text}:{top_k}:{threshold}"
 
-    print(f"Request received: user_id={user_id}, query_text={query_text}, top_k={top_k}, threshold={threshold}")
+    # Track time for cache retrieval
+    cache_start_time = datetime.now()
+    cached_result = cache.get(cache_key)
+    cache_retrieval_time = (datetime.now() - cache_start_time).total_seconds()
+    
+    if cached_result:
+        results = json.loads(cached_result)
+        inference_time = cache_retrieval_time
+    else:
+        start_time = datetime.now()
 
-    body = {
-        "query": {
-            "match": {
-                "title": query_text
-            }
-        },
-        "size": top_k
-    }
-    
-    try:
-        res = es.search(index=index_name, body=body)
-    except NotFoundError as e:
-        print(f"Search error: {e}")
-        return jsonify({"error": "Index not found"}), 404
-    except Exception as e:
-        print(f"Search error: {e}")
-        return jsonify({"error": f"Search error: {e}"}), 500
-    
-    results = []
-    for hit in res['hits']['hits']:
-        if hit['_score'] >= threshold:
-            if {
-                'title': hit['_source']['title'],
-                'link': hit['_source']['link'],
-                'score': hit['_score']
-            } not in results:
-                results.append({
+        print(f"Request received: user_id={user_id}, query_text={query_text}, top_k={top_k}, threshold={threshold}")
+
+        body = {
+            "query": {
+                "match": {
+                    "title": query_text
+                }
+            },
+            "size": top_k
+        }
+        
+        try:
+            res = es.search(index=index_name, body=body)
+        except NotFoundError as e:
+            print(f"Search error: {e}")
+            return jsonify({"error": "Index not found"}), 404
+        except Exception as e:
+            print(f"Search error: {e}")
+            return jsonify({"error": f"Search error: {e}"}), 500
+        
+        results = []
+        for hit in res['hits']['hits']:
+            if hit['_score'] >= threshold:
+                if {
                     'title': hit['_source']['title'],
                     'link': hit['_source']['link'],
                     'score': hit['_score']
-                })
+                } not in results:
+                    results.append({
+                        'title': hit['_source']['title'],
+                        'link': hit['_source']['link'],
+                        'score': hit['_score']
+                    })
+        
+        cache.set(cache_key, json.dumps(results), ex=3600)  # Cache for 1 hour
+        inference_time = (datetime.now() - start_time).total_seconds()
     
-    inference_time = (datetime.now() - start_time).total_seconds()
-    
-    # print(f"Inference time: {inference_time} seconds")
-    
-    return render_template('results.html', results=results, inference_time=inference_time)
+    # Return reduced time for cache hits, or inference time if cache miss
+    return render_template('results.html', results=results, inference_time=inference_time, cache_retrieval_time=cache_retrieval_time if cached_result else None)
 
 if __name__ == '__main__':
     # Start the background thread for scraping
@@ -133,10 +154,3 @@ if __name__ == '__main__':
     # Start the Flask server
     print("Starting Flask server...")
     app.run(debug=True, use_reloader=False)
-
-
-
-
-
-
-#
