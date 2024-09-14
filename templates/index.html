@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Retrieval System</title>
+</head>
+<body>
+    <h1>Welcome to the Document Retrieval System</h1>
+    <form action="/search" method="post">
+        <label for="user_id">User ID:</label>
+        <input type="text" id="user_id" name="user_id" required><br>
+        <label for="text">Search Text:</label>
+        <input type="text" id="text" name="text" required><br>
+        <label for="top_k">Top K:</label>
+        <input type="number" id="top_k" name="top_k" value="5"><br>
+        <label for="threshold">Threshold:</label>
+        <input type="number" step="0.01" id="threshold" name="threshold" value="0.7"><br>
+        <input type="submit" value="Search">
+    </form>
+</body>
+</html>
