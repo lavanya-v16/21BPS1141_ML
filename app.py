@@ -8,15 +8,22 @@ from datetime import datetime
 from collections import defaultdict
 import redis
 import json
+import os
 
 # Initialize Flask app
 app = Flask(__name__)
 
+# Retrieve environment variables
+REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
+REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
+ES_HOST = os.getenv('ES_HOST', 'localhost')
+ES_PORT = int(os.getenv('ES_PORT', 9200))
+
 # Initialize Elasticsearch instance
-es = Elasticsearch([{'host': 'localhost', 'port': 9200, 'scheme': 'http'}])
+es = Elasticsearch([{'host': ES_HOST, 'port': ES_PORT, 'scheme': 'http'}])
 
 # Initialize Redis instance
-cache = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
+cache = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=0, decode_responses=True)
 
 # Define index name
 index_name = 'news_articles'
@@ -59,7 +66,7 @@ def scrape_and_index():
                 pass
 
         print("Scraping and indexing completed.")
-        time.sleep(1800)  # 4 hours = 14400 seconds
+        time.sleep(1800)  # 30 minutes
 
 # Route for index.html
 @app.route('/', methods=['GET'])
@@ -69,11 +76,9 @@ def index():
 # Health check endpoint
 @app.route('/health', methods=['GET'])
 def health():
-    # Return a JSON response with the message "API is running"
     return jsonify({"status": "API is running (21BPS1141)"}), 200
 
 # Search endpoint
-
 @app.route('/search', methods=['POST'])
 def search():
     user_id = request.form.get('user_id')
@@ -94,7 +99,6 @@ def search():
     
     cache_key = f"{user_id}:{query_text}:{top_k}:{threshold}"
 
-    # Track time for cache retrieval
     cache_start_time = datetime.now()
     cached_result = cache.get(cache_key)
     cache_retrieval_time = (datetime.now() - cache_start_time).total_seconds()
@@ -142,15 +146,12 @@ def search():
         cache.set(cache_key, json.dumps(results), ex=3600)  # Cache for 1 hour
         inference_time = (datetime.now() - start_time).total_seconds()
     
-    # Return reduced time for cache hits, or inference time if cache miss
     return render_template('results.html', results=results, inference_time=inference_time, cache_retrieval_time=cache_retrieval_time if cached_result else None)
 
 if __name__ == '__main__':
-    # Start the background thread for scraping
     scraper_thread = threading.Thread(target=scrape_and_index)
     scraper_thread.daemon = True
     scraper_thread.start()
 
-    # Start the Flask server
     print("Starting Flask server...")
     app.run(debug=True, use_reloader=False)
