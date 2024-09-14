@@ -23,7 +23,16 @@ ES_PORT = int(os.getenv('ES_PORT', 9200))
 es = Elasticsearch([{'host': ES_HOST, 'port': ES_PORT, 'scheme': 'http'}])
 
 # Initialize Redis instance
-cache = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=0, decode_responses=True)
+# cache = redis.StrictRedis(host='redis-15439.c330.asia-south1-1.gce.redns.redis-cloud.com', port=15439, db=0, decode_responses=True)
+cache = redis.StrictRedis(
+    host='redis-15439.c330.asia-south1-1.gce.redns.redis-cloud.com',
+    port=15439,
+    password='dnBHDcJe938fo0U5iPz9tt4uYIH9rUTp',
+    db=0,
+    decode_responses=True
+)
+
+
 
 # Define index name
 index_name = 'news_articles'
