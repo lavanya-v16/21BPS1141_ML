@@ -42,7 +42,7 @@ BeautifulSoup, a powerful Python library for web scraping and updating news arti
 ![WhatsApp Image 2024-09-14 at 11 13 08 PM](https://github.com/user-attachments/assets/e84d4286-fe8e-49f7-aad4-734bead58400)
 
 ## API Endpoints:
-1) **'/'**
+## 1) **'/'**
 
 **Method:** GET
 
@@ -51,7 +51,7 @@ BeautifulSoup, a powerful Python library for web scraping and updating news arti
 **Response:** Returns the HTML content of the index.html file. This file is designed to provide a user-friendly interface for interacting with the backend API.
 ![WhatsApp Image 2024-09-14 at 11 18 51 PM](https://github.com/user-attachments/assets/813f3f88-7f91-4da8-976b-9ad175500950)
 
-2) **'/health'**
+## 2) **'/health'**
 
 **Method:** GET
 
@@ -62,7 +62,7 @@ BeautifulSoup, a powerful Python library for web scraping and updating news arti
 ![WhatsApp Image 2024-09-14 at 11 16 25 PM](https://github.com/user-attachments/assets/0300aaef-1e2b-41e0-8206-787c075d54a9)
 
 
-3) **'/search'**
+## 3) **'/search'**
 
 **Method:** GET
 
@@ -87,3 +87,24 @@ text (required): The search query text.
 
 If a user makes more than 5 requests, they will receive an HTTP 429 status code indicating that the rate limit has been exceeded. This helps prevent abuse and ensures fair usage of the service.
 ![WhatsApp Image 2024-09-14 at 11 28 23 PM](https://github.com/user-attachments/assets/a4b74e19-b714-4abf-b30e-a5fc779a048f)
+
+
+# Installation Guide
+## Step 1: Clone the Repository
+Start by cloning the repository to your local machine using Git.
+'git clone https://github.com/your-username/your-repo.git'
+Navigate into the project directory: cd your-repo
+
+## Step 2: Set Up a Virtual Environment (Optional but Recommended)
+python -m venv venv
+venv\Scripts\activate
+
+## Step 3: Install Dependencies
+pip install -r requirements.txt
+
+## Step 4: Configure Environment Variables
+ELASTICSEARCH_URL=http://localhost:9200
+
+## Step 5: Run the Application
+python app.py
+The application will now be running on http://localhost:5000/
