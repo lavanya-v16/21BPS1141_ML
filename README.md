@@ -2,9 +2,9 @@
 
 ## Description
 
-The Document Retrieval System is a backend application built to retrieve and manage documents efficiently. The application is designed using Python and Flask,
-and it integrates various components such as Elasticsearch for indexing, Redis for caching, and a background thread for scraping news articles.
-It provides API endpoints for health checks and document retrieval, with built-in user request tracking and rate limiting.
+The Document Retrieval System is a backend application built to efficiently retrieve and manage documents, focusing on news articles specifically about floods. The application is designed using 
+Python and Flask, integrating various components such as Elasticsearch for indexing, Redis for caching, and a background thread for scraping flood-related news articles. It provides API endpoints for 
+health checks and document retrieval, with built-in user request tracking and rate limiting.
 
 ## Features
 
@@ -25,12 +25,13 @@ fast and accurate responses to user queries.
 
 ## Caching technique Used
 **Caching Method:** Redis
+
 Redis is used for caching search results due to its high performance and support for in-memory data storage. It provides fast data access and is well-suited for caching search results, which helps in reducing the load 
 on Elasticsearch and improving overall application performance.
-#### Query run time before caching:
+#### Query runtime before caching:
 ![WhatsApp Image 2024-09-14 at 10 47 02 PM](https://github.com/user-attachments/assets/ab069bff-894e-4442-abf7-e0dc637d8c4a)
 
-#### Query run time after caching:
+#### Query runtime after caching:
 ![WhatsApp Image 2024-09-14 at 11 09 58 PM](https://github.com/user-attachments/assets/6154e20e-861f-4353-93fe-0de1a6178031)
 
 
